@@ -1,0 +1,268 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-header-title d-inline">รายการขนย้ายทั้งหมด</h3>
+
+
+    </div>
+
+
+    <div class="card-body card-block">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    <th class="col-2">อุปกรณ์</th>
+                    <th class="col-1">จำนวน</th>
+                    <th class="col-1">สาขาต้นทาง</th>
+                    <th class="col-1">สาขาปลายทาง</th>
+                    <th class="col-2">รายการเบิกที่เกี่ยวข้อง</th>
+                    <th class="col-2">สถานะ</th>
+                    <th class="col-2">การจัดการ</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for object in object_list %}
+                    <tr class="d-flex">
+                        <th scope="row" class="col-1">{{ forloop.counter }}</th>
+                        <td class="col-2">
+                            <a href="{% url 'items:item_list' object.src_branch.slug object.item.item_abstract.slug %}">
+                                ชื่อ: {{ object.item.item_abstract.title }} รหัส: {{ object.item.item_abstract.serial }}:{{ object.item.tracking_number }}
+                            </a>
+                        </td>
+                        <td class="col-1">
+                            {{ object.amount }}
+                        </td>
+                        <td class="col-1">
+                            <a href="{% url 'branches:branch_detail' object.src_branch.slug %}">
+                                {{ object.src_branch.title }}
+                            </a>
+                        </td>
+                        <td class="col-1">
+                            <a href="{% url 'branches:branch_detail' object.dst_branch.slug %}">
+                                {{ object.dst_branch.title }}
+                            </a>
+                        </td>
+                        <td class="col-2">
+                            {% if object.ref_order.id %}
+                                <a href="{% url 'orders:detail' object.ref_order.id %}">
+                                    {{ object.ref_order.id }}
+                                </a>
+                            {% else %}
+                                ไม่มี
+                            {% endif %}
+                        </td>
+                        <td class="col-2">
+                            {% if object.status == 'request_sent' %}
+                                ส่งคำขอขนย้าย
+                            {% elif object.status == 'request_accepted' %}
+                                ตอบรับคำขอขนย้ายแล้ว
+                            {% elif object.status == 'dispatched' %}
+                                ส่งออกจากสาขาต้นทางแล้ว
+                            {% elif object.status == 'received' %}
+                                รับเข้าที่สาขาปลายทางแล้ว
+                            {% elif object.status == 'canceled' %}
+                                ยกเลิกคำขอขนย้าย
+                            {% endif %}
+
+                        </td>
+
+
+                        <td class="col-2">
+                            {% if object.status == 'request_sent' %}
+                                <button class="btn btn-primary btn-sm mt-2 "
+                                        data-toggle="modal"
+                                        data-backdrop="static"
+                                        data-keyboard="false"
+                                        data-target="#handle_request_Modal{{ object.id }}">
+                                    <i class="fas fa-reply ml-1 mr-2"></i>
+                                    จัดการคำขอ
+                                </button>
+
+                                <div class="modal" id="handle_request_Modal{{ object.id }}" aria-hidden="true"
+                                     style="display: none;">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+
+                                                <button class="close" data-dismiss="modal">×</button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <h4 class="font-weight-bold text-dark">
+                                                    ต้องการตอบรับรายการขนย้ายอุปกรณ์<br>
+                                                    ชื่อ: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item.item_abstract.title }}</span>
+                                                    รหัส: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item.item_abstract.serial }}</span>
+                                                    หมายเลขติดตาม: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item.tracking_number }}</span>
+                                                    จำนวน: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.amount }}</span><br>
+                                                    จากสาขา <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.src_branch.title }}</span>
+                                                    ไปยังสาขา <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.dst_branch.title }}</span>
+                                                    หรือไม่
+                                                </h4>
+
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                {% if request.user.branch != object.req_sender.branch and request.user.user_type == 'inv_manager' %}
+                                                    <form id="accept_transfer_request_b" action="{% url 't_orders:accept_transfer_request' %}"
+                                                          method="post">{% csrf_token %}
+                                                        <input type='hidden' name='req_id' value='{{ object.id }}'/>
+
+                                                        <button type="submit" class="btn btn-success btn-sm">
+                                                            <i class="fas fa-check-double"></i>&nbsp;ตกลง
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                                <form id="cancel_transfer_request_b" action="{% url 't_orders:cancel_transfer_request' %}"
+                                                      method="post">{% csrf_token %}
+                                                    <input type='hidden' name='req_id' value='{{ object.id }}'/>
+
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-times-circle"></i>&nbsp;ปฏิเสธ
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            {% elif object.status == 'request_accepted' and request.user.branch == object.src_branch and request.user.user_type == 'inv_manager' %}
+
+                                <button class="btn btn-secondary btn-sm mt-2 "
+                                        data-toggle="modal"
+                                        data-backdrop="static"
+                                        data-keyboard="false"
+                                        data-target="#to_dispatch_Modal{{ object.id }}">
+                                    <i class="fas fa-dolly ml-1 mr-2"></i>
+                                    ยืนยันการจัดส่ง
+                                </button>
+
+                                <div class="modal text-center" id="to_dispatch_Modal{{ object.id }}" aria-hidden="true"
+                                     style="display: none;">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+
+                                                <button class="close" data-dismiss="modal">×</button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <h4 class="font-weight-bold text-dark">
+                                                    ต้องการจัดส่งอุปกรณ์<br>
+                                                    ชื่อ: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item.item_abstract.title }}</span>
+                                                    รหัส: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item.item_abstract.serial }}</span>
+                                                    หมายเลขติดตาม: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item.tracking_number }}</span>
+                                                    จำนวน: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.amount }}</span><br>
+                                                    จากสาขา <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.src_branch.title }}</span>
+                                                    ไปยังสาขา <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.dst_branch.title }}</span>
+                                                    หรือไม่
+                                                </h4>
+
+
+                                            </div>
+                                            <div class="modal-footer">
+
+                                                <form action="{% url 't_orders:dispatch' %}"
+                                                      method="post">{% csrf_token %}
+                                                    <input type='hidden' name='req_id' value='{{ object.id }}'/>
+
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-check-double"></i>&nbsp;ตกลง
+                                                    </button>
+                                                </form>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif object.status == 'dispatched' and request.user.branch == object.dst_branch and request.user.user_type == 'inv_manager' %}
+
+                                <button class="btn btn-success btn-sm mt-2 "
+                                        data-toggle="modal"
+                                        data-backdrop="static"
+                                        data-keyboard="false"
+                                        data-target="#take_in_Modal{{ object.id }}">
+                                    <i class="fas fa-angle-double-down ml-1 mr-2"></i>
+                                    ยืนยันการรับเข้า
+                                </button>
+
+                                <div class="modal text-center" id="take_in_Modal{{ object.id }}" aria-hidden="true"
+                                     style="display: none;">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+
+                                                <button class="close" data-dismiss="modal">×</button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <h4 class="font-weight-bold text-dark">
+                                                    ต้องการรับเข้าอุปกรณ์ <br>
+                                                    ชื่อ: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item.item_abstract.title }}</span>
+                                                    รหัส: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item.item_abstract.serial }}</span>
+                                                    หมายเลขติดตาม: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item.tracking_number }}</span>
+                                                    จำนวน: <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.amount }}</span><br>
+                                                    จากสาขา <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.src_branch.title }}</span>
+                                                    เข้าสู่สาขา <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.dst_branch.title }}</span>
+                                                    หรือไม่
+                                                </h4>
+
+
+                                            </div>
+                                            <div class="modal-footer">
+
+                                                <form action="{% url 't_orders:take_in' %}"
+                                                      method="post">{% csrf_token %}
+                                                    <input type='hidden' name='req_id' value='{{ object.id }}'/>
+
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-check-double"></i>&nbsp;ตกลง
+                                                    </button>
+                                                </form>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <button style="visibility: hidden;" type="button" class="btn btn-success btn-sm">
+                                    <i class="fas fa-check-double"></i>&nbsp;BOO
+                                </button>
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

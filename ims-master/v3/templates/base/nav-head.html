@@ -1,0 +1,52 @@
+{% load static %}
+
+<!-- Header-->
+<header id="header" class="header">
+    <div class="top-left">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="../.."><img alt="Logo" src={% static "images/logo.png" %}></a>
+            <a class="navbar-brand hidden" href="../.."><img alt="Logo" src={% static "images/logo2.png" %}></a>
+            <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
+        </div>
+    </div>
+    <div class="top-right">
+        <div class="header-menu">
+            <div class="header-left">
+
+
+            </div>
+
+            {% if not request.user.is_authenticated %}
+                <div class="user-area float-right">
+                    <a href="{% url 'login_view' %}">
+                        <button class="btn btn-primary mt-2" type="button">
+
+                            <i class="fa fa-sign-in"></i> ลงชื่อเข้าใช้
+                        </button>
+
+                    </a>
+
+                </div>
+            {% else %}
+                <div class="user-area dropdown float-right">
+
+                    <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="false">
+                    {{ request.user.username }}
+                        <img class="user-avatar rounded-circle" alt="User Avatar"
+                             src={% if request.user.image %}"{{ request.user.image.url }}"{% else %}
+                                 {% static "images/user_m.png" %}{% endif %}>
+                    </a>
+
+                    <div class="user-menu dropdown-menu">
+                        <a class="nav-link" href="{% url 'profile:home' %}"><i class="fa fa- user"></i>ดูบัญชีผู้ใช้</a>
+
+
+                        <a class="nav-link" href="{% url 'logout_view' %}"><i class="fa fa-power -off"></i>ออกจากระบบ</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</header>
+<!-- /#header -->

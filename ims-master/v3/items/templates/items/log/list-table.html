@@ -1,0 +1,77 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-header-title d-inline">ประวัติการจัดการ</h3>
+
+
+    </div>
+
+
+    <div class="card-body card-block">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    <th class="col-2">รหัสอุปกรณ์</th>
+                    <th class="col-2">วัน-เวลา</th>
+                    <th class="col-5">เหตุการณ์</th>
+                    <th class="col-2">หมายเหตุ</th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for object in object_list %}
+                    <tr class="d-flex">
+                        <th scope="row" class="col-1">{{ forloop.counter }}</th>
+                        <td class="col-2">
+                            {% if object.related_branch and object.serial %}
+                                <a href="{% url 'items:item_list' object.related_branch object.serial %}">
+                                    {{ object.serial }}
+                                </a>
+                            {% else %}
+                                {{ object.serial }}
+                            {% endif %}
+                        </td>
+                        <td class="col-2">
+                            {{ object.timestamp }}
+                        </td>
+                        <td class="col-5">
+                            {{ object.event_note |slice:":60" }}<span class="collapse"
+                                                                      id="more_event{{ object.id }}">{{ object.event_note | slice:"60:" }}</span>
+                            {% if object.event_note|length > 60 %}
+                                <a class="text-primary" data-toggle="collapse" data-target="#more_event{{ object.id }}">
+                                    ...&raquo
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td class="col-2">
+                            {{ object.user_comment |slice:":30" |default:"ไม่ได้ระบุ" }}<span class="collapse"
+                                                                                              id="more_comment{{ object.id }}">{{ object.user_comment | slice:"30:" }}</span>
+
+                            {% if object.user_comment|length > 30 %}
+
+                                <a class="text-primary" data-toggle="collapse"
+                                   data-target="#more_comment{{ object.id }}">
+                                    ...&raquo
+                                </a>
+                            {% endif %}
+                        </td>
+
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+
+

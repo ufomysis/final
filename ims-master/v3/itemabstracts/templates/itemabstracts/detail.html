@@ -1,0 +1,220 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumb %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1 class="font-weight-bold text-dark">รายละเอียดอุปกรณ์</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li><a href="{% url 'itemabstracts:list' %}">จัดการข้อมูลอุปกรณ์</a></li>
+                                <li><a href="">{{ object.title |slice:":10" }}</a></li>
+                                <li class="active">รายละเอียดอุปกรณ์</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="font-weight-bold ">รายละเอียดอุปกรณ์</h4>
+                </div>
+                <div class="col">
+
+                    <button type="button" class="btn btn-danger btn-sm float-right ml-2" data-toggle="modal"
+                            data-target="#deleteModal"
+                            data-backdrop="static"
+                            data-keyboard="false"><i
+                            class="fas fa-trash-alt"></i>&nbsp;ลบข้อมูลอุปกรณ์
+                    </button>
+                    <div class="modal" id="deleteModal" aria-hidden="true" style="display: none;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+
+                                    <button class="close" data-dismiss="modal">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <h4 class="font-weight-bold text-dark">คุณต้องการลบข้อมูลอุปกรณ์ <span
+                                            class="font-weight-bold font-italic text-primary">{{ object.title |slice:":15" }}</span>
+                                        หรือไม่ ? หากมีการใช้งานข้อมูลอุปกรณ์นี้อยู่ ข้อมูลที่เกี่ยวข้อง เช่น
+                                        ข้อมูลการเบิกใช้งานและข้อมูลจำนวนอุปกรณ์ จะถูกลบไปด้วย</h4>
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{% url 'itemabstracts:delete' object.slug %}" method='POST'>
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i>&nbsp;ยืนยันการลบ
+                                        </button>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <a href="{% url 'itemabstracts:update' object.slug %}">
+                        <button type="button" class="btn btn-warning btn-sm float-right ml-2"><i class="fas fa-edit"></i>&nbsp;
+                            แก้ไขข้อมูลข้อมูลอุปกรณ์
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body card-block">
+            <div class="row">
+                <div class="col m-3 text-center">
+
+                    {% if object.image %}
+                        <img class="img-responsive" width="60%" alt="" src="{{ object.image.url }}">
+                    {% else %}
+                        <img class="img-responsive" width="60%" alt="" src={% static "images/tools.png" %}>
+                    {% endif %}
+
+                </div>
+                <div class="col ">
+                    <div class="bg-light p-3 mt-3 mr-3">
+                        <h4 class="font-weight-bold mb-2">ชื่ออุปกรณ์</h4>
+                        <p class="mb-4 ml-4">{{ object.title }}</p>
+                        <h4 class="font-weight-bold mb-2">รหัสอุปกรณ์</h4>
+                        <p class="mb-4 ml-4">{{ object.serial }}</p>
+                        <h4 class="font-weight-bold mb-2">คำอธิบายอุปกรณ์</h4>
+                        {% if object.description %}
+                            <p class="mb-0 ml-4">{{ object.description |slice:":200" }}
+                                <span class="collapse"
+                                      id="more_detail">{{ object.description |slice:"200:" }}</span>
+
+                                {% if object.description|length > 200 %}
+
+                                    <a class="mb-4 text-right text-primary" data-toggle="collapse"
+                                       data-target="#more_detail">...&raquo</a>
+                                {% endif %}
+
+                            </p>
+
+                        {% else %}
+                            <p class="mb-4 ml-4">ไม่ได้ระบุ</p>
+                        {% endif %}
+                        <h4 class="font-weight-bold mb-2">ประเภทอุปกรณ์</h4>
+                        <p class="mb-4 ml-4">{{ object.category.title }}</p>
+                        <h4 class="font-weight-bold mb-2">หน่วยนับอุปกรณ์</h4>
+                        <p class="mb-4 ml-4">{{ object.unit.title }}</p>
+                        <h4 class="font-weight-bold mb-2">เพิ่มข้อมูลโดย</h4>
+                        {% if object.added_by %}
+                            {% if object.added_by.branch %}
+                                <a href="{% url 'branches:user_detail' object.added_by.branch.slug object.added_by.username %}">
+                                    <p class="mb-4 ml-4 text-primary">{{ object.added_by.username }}</p>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'branches:user_detail' 'all' object.added_by.username %}">
+                                    <p class="mb-4 ml-4 text-primary">{{ object.added_by.username }}</p>
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <p class="mb-4 ml-4">ไม่ได้ระบุ</p>
+                        {% endif %}
+
+                        <h4 class="font-weight-bold mb-2">เพิ่มข้อมูลเมื่อ</h4>
+                        <p class="mb-4 ml-4">{{ object.added }}</p>
+                        <h4 class="font-weight-bold mb-2">แก้ไขข้อมูลล่าสุดโดย</h4>
+                        {% if object.updated_by %}
+                            {% if object.updated_by.branch %}
+                                <a href="{% url 'branches:user_detail' object.updated_by.branch.slug object.updated_by.username %}">
+                                    <p class="mb-4 ml-4 text-primary">{{ object.updated_by.username }}</p>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'branches:user_detail' 'all' object.updated_by.username %}">
+                                    <p class="mb-4 ml-4 text-primary">{{ object.updated_by.username }}</p>
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                        <h4 class="font-weight-bold mb-2">แก้ไขข้อมูลล่าสุดเมื่อ</h4>
+                        <p class="mb-4 ml-4">{{ object.updated }}</p>
+                        <h4 class="font-weight-bold mb-2">สิทธิ์การแก้ไขข้อมูล</h4>
+                        {% if object.allow_non_author_edit %}
+                            <p class="mb-4 ml-4 text-success">อนุญาตให้บุคคลอื่นนอกจากผู้เพิ่มข้อมูลแก้ไขได้</p>
+                        {% else %}
+                            <p class="mb-4 ml-4 text-danger">ไม่อนุญาตให้บุคคลอื่นนอกจากผู้เพิ่มข้อมูลแก้ไขได้</p>
+                        {% endif %}
+                        <h4 class="font-weight-bold mb-2">หมายเลขติดตามอุปกรณ์</h4>
+                        {% if object.track_1by1 %}
+                            <p class="ml-4 mb-4">เพิ่มหมายเลขติดตามอุปกรณ์<b class="text-info font-italic">ทุกชิ้น</b>
+                            </p>
+                        {% else %}
+                            <p class="ml-4 mb-4">เพิ่มหมายเลขติดตามอุปกรณ์<b
+                                    class="text-info font-italic">หมายเลขเดียว</b>
+                            </p>
+                        {% endif %}
+
+                            {% if not is_registered and request.user.user_type == 'inv_manager'%}
+
+                                <button class="btn btn-info btn-sm mt-2 " data-toggle="modal"
+                                        data-target="#addItemModal">
+                                    <i class="fas fa-folder-plus ml-1 mr-2"></i>
+                                    ลงทะเบียนอุปกรณ์ลงสู่คลังสาขา
+                                </button>
+                                <form action="{% url 'itemabstracts:additem' object.slug %}"
+                                      method="post">{% csrf_token %}
+                                    <div class="modal" id="addItemModal" aria-hidden="true" style="display: none;">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+
+                                                    <button class="close" data-dismiss="modal">×</button>
+                                                </div>
+                                                <div class="modal-body">
+
+                                                    <h4 class="font-weight-bold text-dark">
+                                                        ลงทะเบียนอุปกรณ์ <span
+                                                            class="text-info font-italic">{{ object.title }}</span>
+                                                        สู่คลังสาขา <span
+                                                            class="text-info font-italic">{{ request.user.branch.title }}</span>
+                                                        หรือไม่
+                                                    </h4>
+
+
+                                                </div>
+                                                <div class="modal-footer">
+
+
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-check-double"></i>&nbsp;ยืนยัน
+                                                    </button>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+
+                            {% else %}
+                                <p class="mb-4 text-warning">**อุปกรณ์นี้ลงทะเบียนแล้ว**</p>
+                            {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

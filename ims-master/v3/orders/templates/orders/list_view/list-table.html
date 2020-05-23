@@ -1,0 +1,114 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="card">
+
+    <div class="card-header">
+        {% if request.user.user_type == 'inv_manager' %}
+            <h3 class="card-header-title d-inline">รายการเบิกทั้งหมดในสาขา {{ branch.title }}</h3>
+        {% else %}
+            <h3 class="card-header-title d-inline">รายการเบิกทั้งหมดของคุณ</h3>
+        {% endif %}
+    </div>
+
+
+    <div class="card-body card-block">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    <th class="col-2">เลขรายการเบิก</th>
+                    <th class="col-2">รายละเอียด</th>
+                    {% if request.user.user_type == 'inv_manager' %}
+                        <th class="col-2">ชื่อผู้เบิก</th>
+                        <th class="col-1">สถานะ</th>
+                        <th class="col-1">สร้างวันที่</th>
+                        <th class="col-1">แก้ไขล่าสุดวันที่</th>
+                        <th class="col-2">การจัดการ</th>
+                    {% else %}
+                        <th class="col-3">สถานะ</th>
+                        <th class="col-1">สร้างวันที่</th>
+                        <th class="col-1">แก้ไขล่าสุดวันที่</th>
+                        <th class="col-2">เมนู</th>
+                    {% endif %}
+
+
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for object in object_list %}
+                    <tr class="d-flex">
+                        <th scope="row" class="col-1">{{ forloop.counter }}</th>
+                        <td class="col-2">
+                            <a href="{% url 'orders:detail' object.pk %}">
+                                {{ object.id }}
+                            </a>
+                        </td>
+                        <td class="col-2">
+                            {% if object.items.first.item_abstract.track_1by1 %}
+                                {{ object.items.first.item_abstract.title }} x
+                                {{ object.items.count }} {{ object.items.first.item_abstract.unit.title }}<br>
+                            {% else %}
+                                {% for order_item in object.order_item_order.all %}
+                                    {{ order_item.item.item_abstract.title }} x {{ order_item.amount }} {{ order_item.item.item_abstract.unit.title }}<br>
+                                {% endfor %}
+                            {% endif %}
+
+                        </td>
+                        {% if request.user.user_type == 'inv_manager' %}
+                            <td class="col-2">
+                                <a href="{% url 'branches:user_detail' object.user.branch.slug object.user.username %}">
+                                    {{ object.user.username }}
+                                </a>
+                            </td>
+                            <td class="col-1">
+                                {% if object.status == 'created' %}สร้างรายการแล้ว
+                                {% elif object.status == 'wait_t_confirm' or object.status == 'item_prepare' %}
+                                    รอจัดเตรียมอุปกรณ์
+                                {% elif object.status == 'item_ready' %}พร้อมส่งมอบอุปกรณ์
+                                {% elif object.status == 'item_received' %}รับอุปกรณ์แล้ว
+                                {% elif object.status == 'item_returned' %}คืนอุปกรณ์แล้ว
+                                {% elif object.status == 'overdue' %}รายการเสร็จสิ้น(คืนช้า)
+                                {% elif object.status == 'done' %}รายการเสร็จสิ้น
+                                {% elif object.status == 'canceled' %}รายการถูกยกเลิก
+                                {% endif %}
+
+                            </td>
+                            <td class="col-1">{{ object.created_at }}</td>
+                            <td class="col-1">{{ object.updated_at }}</td>
+                        {% else %}
+                            <td class="col-3">
+                                {% if object.status == 'created' %}สร้างรายการแล้ว
+                                {% elif object.status == 'wait_t_confirm' or object.status == 'item_prepare' %}
+                                    รอจัดเตรียมอุปกรณ์
+                                {% elif object.status == 'item_ready' %}พร้อมส่งมอบอุปกรณ์
+                                {% elif object.status == 'item_received' %}รับอุปกรณ์แล้ว
+                                {% elif object.status == 'item_returned' %}คืนอุปกรณ์แล้ว
+                                {% elif object.status == 'overdue' %}รายการเสร็จสิ้น(คืนช้า)
+                                {% elif object.status == 'done' %}รายการเสร็จสิ้น
+                                {% elif object.status == 'canceled' %}รายการถูกยกเลิก
+                                {% endif %}
+
+                            </td>
+                            <td class="col-1">{{ object.created_at }}</td>
+                            <td class="col-1">{{ object.updated_at }}</td>
+                        {% endif %}
+                        <td class="col-2">
+                            <a href="{% url 'orders:detail' object.pk %}">
+                                <button type="button" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-tools"></i>&nbsp;ดูรายละเอียด
+                                </button>
+                            </a>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

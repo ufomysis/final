@@ -1,0 +1,66 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+
+{% block breadcrumb %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1 class="font-weight-bold text-dark">ประเมินผล</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li><a href="{% url 'audit_session:list' %}">ตรวจสอบอุปกรณ์</a></li>
+                                <li><a href="{% url 'audit_session:detail' object.pk %}">{{ object.title| truncatechars:30 }}</a></li>
+                                <li class="active">ประเมินผล</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block content %}
+
+
+    <form action='' method='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card">
+
+            <div class="card-header">
+                <h3 class="card-header-title d-inline">ประเมินผล</h3>
+
+                <button type="submit" class="btn btn-success float-right "><i class="fas fa-check-double"></i>&nbsp;
+                    ยืนยันการประเมินผล
+                </button>
+            </div>
+            <div class="card-body">
+                {{ formset.management_form }}
+
+                {% for form in formset %}
+                    {{ form |crispy }}
+
+                    <br/>
+                {% endfor %}
+            </div>
+
+            <div class="card-header">
+                <button type="submit" class="btn btn-success float-right "><i class="fas fa-check-double"></i>&nbsp;
+                    ยืนยันการประเมินผล
+                </button>
+            </div>
+        </div>
+
+
+    </form>
+
+
+{% endblock %}

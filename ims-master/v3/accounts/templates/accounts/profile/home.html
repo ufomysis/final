@@ -1,0 +1,116 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+
+{% block breadcrumb %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1 class="font-weight-bold text-dark">ข้อมูลส่วนตัว</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li class="active">ข้อมูลส่วนตัว</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="font-weight-bold ">ข้อมูลส่วนตัว</h4>
+                </div>
+                <div class="col">
+
+                    <a href="{% url 'password_change' %}">
+                        <button type="button" class="btn btn-info btn-sm float-right ml-2"><i class="fas fa-key"></i>&nbsp;
+                            เปลี่ยนรหัสผ่าน
+                        </button>
+                    </a>
+                    <a href="{% url 'profile:user_profile_update' %}">
+                        <button type="button" class="btn btn-warning btn-sm float-right ml-2"><i class="fas fa-edit"></i>&nbsp;
+                            แก้ไขข้อมูลผู้ใช้
+                        </button>
+                    </a>
+
+
+                </div>
+            </div>
+
+
+        </div>
+        <div class="card-body card-block">
+            <div class="row">
+                <div class="col m-3 text-center">
+
+                    {% if object.image %}
+                        <img class="img-responsive" width="70%" alt="" src="{{ object.image.url }}">
+                    {% else %}
+                        <img class="img-responsive" width="70%" alt="" src={% static "images/user_m.png" %}>
+                    {% endif %}
+
+
+                </div>
+                <div class="col ">
+                    <div class="bg-light p-3 mt-3 mr-3">
+                        <h4 class="font-weight-bold mb-2">ชื่อผู้ใช้งาน</h4>
+                        <p class="mb-4 ml-4">{{ object.username }}</p>
+                        <h4 class="font-weight-bold mb-2">ชื่อ - นามสกุล</h4>
+                        <p class="mb-4 ml-4">
+                            {% if object.first_name %} {{ object.first_name }} {% else %} ยังไม่ได้ระบุ {% endif %}
+                            {% if object.last_name %} {{ object.last_name }} {% else %} ยังไม่ได้ระบุ {% endif %}
+                        </p>
+
+                        <h4 class="font-weight-bold mb-2">E-mail</h4>
+                        <p class="mb-4 ml-4">
+                            {% if object.email %} {{ object.email }} {% else %} ยังไม่ได้ระบุ {% endif %}
+                        </p>
+
+                        <h4 class="font-weight-bold mb-2">สาขา</h4>
+
+                        <p class="mb-4 ml-4">
+                            {% if object.branch.title %} {{ object.branch.title }} {% else %} ยังไม่ได้ระบุ {% endif %}
+                        </p>
+
+                        <h4 class="font-weight-bold mb-2">ประเภทผู้ใช้งาน</h4>
+                        <p class="mb-4 ml-4">
+                            {% if object.user_type == 'administrator' %} ผู้ดูแลระบบ
+                            {% elif object.user_type == 'normal' %} ผู้ใช้งานทั่วไป
+                            {% elif object.user_type == 'inv_manager' %} ผู้ดูแลจัดการอุปกรณ์สาขา
+                            {% elif object.user_type == 'auditor' %} ผุ้ตรวจสอบอุปกรณ์
+                            {% endif %}
+                        </p>
+
+                        <h4 class="font-weight-bold mb-2">ข้อมูลเพิ่มเติม</h4>
+                        <p class="mb-4 ml-4">
+                            {% if object.etc %} {{ object.etc }} {% else %} ยังไม่ได้ระบุ {% endif %}
+                        </p>
+                        <h4 class="font-weight-bold mb-2">เข้าสู่ระบบครั้งล่าสุดเมื่อ</h4>
+                        <p class="mb-4 ml-4">
+                            {% if object.last_login %} {{ object.last_login }} {% else %}
+                                ยังไม่เคยเข้าสู่ระบบ {% endif %}
+                        </p>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,112 @@
+{% load crispy_forms_tags %}
+
+<div class="card">
+
+    <div class="card-header ">
+
+
+        <form action="{% url 'categories:create' %}" method='POST'>{% csrf_token %}
+            <div class="row">
+                <div class="col col-md-7 mb-0"><h3 class="card-header-title d-inline">ประเภททั้งหมด</h3></div>
+
+                <div class="col col-md-3 mb-0">
+                    {{ create_form | crispy }}
+                </div>
+                <div class="col ">
+                    <button type="submit" class="btn btn-success btn-block float-right "><i
+                            class="fas fa-plus-circle"></i>&nbsp;
+                        เพิ่มประเภทใหม่
+                    </button>
+                </div>
+
+            </div>
+        </form>
+
+
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-2">#</th>
+                    <th class="col-4">ชื่อประเภท</th>
+                    <th class="col-2">เพิ่มโดย</th>
+                    <th class="col-2">เพิ่มเมื่อ</th>
+                    <th class="col-2">การจัดการ</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if object_list %}
+                    {% for object in object_list %}
+                        <tr class="d-flex">
+                            <th scope="row" class="col-2">{{ forloop.counter }}</th>
+                            <td class="col-4">
+
+                                {{ object.title |truncatechars:30 }}
+
+                            </td>
+                            <td class="col-2">
+                                {% if object.added_by %}
+                                    {% if object.added_by.branch %}
+                                        <a href="{% url 'branches:user_detail' object.added_by.branch.slug object.added_by.username %}">
+                                            <p class="text-primary">{{ object.added_by.username |slice:":15" }}</p>
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'branches:user_detail' 'all' object.added_by.username %}">
+                                            <p class="text-primary">{{ object.added_by.username |slice:":15" }}</p>
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="">ไม่ได้ระบุ</p>
+                                {% endif %}
+
+                            </td>
+                            <td class="col-2">
+                                {% if object.added %} {{ object.added }} {% else %} ยังไม่ได้ระบุ {% endif %}
+                            </td>
+                            <td class="col-2">
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                                        data-target="#deleteModal{{ object.id }}"><i
+                                        class="fas fa-trash-alt"></i>&nbsp;ลบประเภท
+                                </button>
+                                <div class="modal" id="deleteModal{{ object.pk }}" aria-hidden="true"
+                                     style="display: none;">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+
+                                                <button class="close" data-dismiss="modal">×</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h4 class="font-weight-bold text-dark">
+                                                    คุณต้องการลบประเภท <span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.title |slice:":15" }}</span>
+                                                    หรือไม่ ?</h4>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form action="{% url 'categories:delete' object.pk %}"
+                                                      method='POST'>
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash-alt"></i>&nbsp;ยืนยันการลบ
+                                                    </button>
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

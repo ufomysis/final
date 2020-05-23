@@ -1,0 +1,318 @@
+<div class="row">
+
+    <div class="col ">
+        <h1>รายการเบิกเลขที่ {{ object.id }}</h1>
+        <! -- To test add 'active' class and 'visited' class to different li elements -->
+        <div class="checkout-wrap ">
+            <ul class="checkout-bar" style="position: relative;">
+
+                {% if object.status == 'item_prepare' or object.status == 'wait_t_confirm' %}
+
+                    <li class="visited">สร้างรายการ
+                        <p>
+                            {% if StatusTimestamp.created.timestamp %}
+                                {{ StatusTimestamp.created.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="active">กำลังจัดเตรียมอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_prepare.timestamp %}
+                                {{ StatusTimestamp.item_prepare.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="">พร้อมส่งมอบอุปกรณ์
+                        <p>ยังไม่ได้ระบุ</p>
+                    </li>
+                    <li class="">รับอุปกรณ์แล้ว
+                        <p>ยังไม่ได้ระบุ</p>
+                    </li>
+                    <li class="">คืนอุปกรณ์แล้ว
+                        <p>ยังไม่ได้ระบุ</p>
+                    </li>
+                    <li class="">รายการเสร็จสิ้น
+                        <p>ยังไม่ได้ระบุ</p>
+                    </li>
+
+                {% elif object.status == 'item_ready' %}
+                    <li class="visited">สร้างรายการ
+                        <p>
+                            {% if StatusTimestamp.created.timestamp %}
+                                {{ StatusTimestamp.created.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">กำลังจัดเตรียมอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_prepare.timestamp %}
+                                {{ StatusTimestamp.item_prepare.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="active">พร้อมส่งมอบอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_ready.timestamp %}
+                                {{ StatusTimestamp.item_ready.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="">รับอุปกรณ์แล้ว<p>ยังไม่ได้ระบุ</p></li>
+                    <li class="">คืนอุปกรณ์แล้ว<p>ยังไม่ได้ระบุ</p></li>
+                    <li class="">รายการเสร็จสิ้น<p>ยังไม่ได้ระบุ</p></li>
+                {% elif object.status == 'item_received' %}
+                    <li class="visited">สร้างรายการ
+                        <p>
+                            {% if StatusTimestamp.created.timestamp %}
+                                {{ StatusTimestamp.created.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">กำลังจัดเตรียมอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_prepare.timestamp %}
+                                {{ StatusTimestamp.item_prepare.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">พร้อมส่งมอบอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_ready.timestamp %}
+                                {{ StatusTimestamp.item_ready.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="active">รับอุปกรณ์แล้ว
+                        <p>
+                            {% if StatusTimestamp.item_received.timestamp %}
+                                {{ StatusTimestamp.item_received.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="">คืนอุปกรณ์แล้ว<p>ยังไม่ได้ระบุ</p></li>
+                    <li class="">รายการเสร็จสิ้น<p>ยังไม่ได้ระบุ</p></li>
+                {% elif object.status == 'item_returned' %}
+                    <li class="visited">สร้างรายการ
+                        <p>
+                            {% if StatusTimestamp.created.timestamp %}
+                                {{ StatusTimestamp.created.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">กำลังจัดเตรียมอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_prepare.timestamp %}
+                                {{ StatusTimestamp.item_prepare.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">พร้อมส่งมอบอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_ready.timestamp %}
+                                {{ StatusTimestamp.item_ready.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">รับอุปกรณ์แล้ว
+                        <p>
+                            {% if StatusTimestamp.item_received.timestamp %}
+                                {{ StatusTimestamp.item_received.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="active">คืนอุปกรณ์แล้ว
+                        <p>
+                            {% if StatusTimestamp.item_returned.timestamp %}
+                                {{ StatusTimestamp.item_returned.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="">รายการเสร็จสิ้น<p>ยังไม่ได้ระบุ</p></li>
+                {% elif object.status == 'done' %}
+                    <li class="visited">สร้างรายการ
+                        <p>
+                            {% if StatusTimestamp.created.timestamp %}
+                                {{ StatusTimestamp.created.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">กำลังจัดเตรียมอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_prepare.timestamp %}
+                                {{ StatusTimestamp.item_prepare.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">พร้อมส่งมอบอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_ready.timestamp %}
+                                {{ StatusTimestamp.item_ready.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">รับอุปกรณ์แล้ว
+                        <p>
+                            {% if StatusTimestamp.item_received.timestamp %}
+                                {{ StatusTimestamp.item_received.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">คืนอุปกรณ์แล้ว
+                        <p>
+                            {% if StatusTimestamp.item_returned.timestamp %}
+                                {{ StatusTimestamp.item_returned.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited last">รายการเสร็จสิ้น
+                        <p>
+                            {% if StatusTimestamp.done.timestamp %}
+                                {{ StatusTimestamp.done.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                {% elif object.status == 'canceled' %}
+                    <li class="visited">สร้างรายการ
+                        <p>
+                            {% if StatusTimestamp.created.timestamp %}
+                                {{ StatusTimestamp.created.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="canceled">กำลังจัดเตรียมอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_prepare.timestamp %}
+                                {{ StatusTimestamp.item_prepare.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="canceled">พร้อมส่งมอบอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_ready.timestamp %}
+                                {{ StatusTimestamp.item_ready.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="canceled">รับอุปกรณ์แล้ว
+                        <p>ยังไม่ได้ระบุ</p>
+                    </li>
+                    <li class="canceled">คืนอุปกรณ์แล้ว
+                        <p>ยังไม่ได้ระบุ</p>
+                    </li>
+                    <li class="canceled last">ยกเลิกรายการ
+                        <p>
+                            {% if StatusTimestamp.canceled.timestamp %}
+                                {{ StatusTimestamp.canceled.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+
+                {% elif object.status == 'overdue' %}
+                    <li class="visited">สร้างรายการ
+                        <p>
+                            {% if StatusTimestamp.created.timestamp %}
+                                {{ StatusTimestamp.created.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">กำลังจัดเตรียมอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_prepare.timestamp %}
+                                {{ StatusTimestamp.item_prepare.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">พร้อมส่งมอบอุปกรณ์
+                        <p>
+                            {% if StatusTimestamp.item_ready.timestamp %}
+                                {{ StatusTimestamp.item_ready.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="visited">รับอุปกรณ์แล้ว
+                        <p>
+                            {% if StatusTimestamp.item_received.timestamp %}
+                                {{ StatusTimestamp.item_received.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="overdue">คืนอุปกรณ์แล้ว (คืนอุปกรณ์ช้า)
+                        <p>
+                            {% if StatusTimestamp.item_returned.timestamp %}
+                                {{ StatusTimestamp.item_returned.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                    <li class="overdue last">เสร็จสิ้น (คืนอุปกรณ์ช้า)
+                        <p>
+                            {% if StatusTimestamp.done.timestamp %}
+                                {{ StatusTimestamp.done.timestamp }}
+                            {% else %}
+                                ยังไม่ได้ระบุ
+                            {% endif %}
+                        </p>
+                    </li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,174 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href={% static "assets/css/fontawesome-free-5.11.2-web/css/all.min.css" %}>
+
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="m-5">
+        <div class="row">
+            <div class="col">
+                <a href="{% url 'orders:detail' object.pk %}">
+                    <button type="button" class="btn btn-info ml-2 ">
+                        <i class="fas fa-backward"></i>&nbsp;ย้อนกลับ
+                    </button>
+                </a>
+                <button onclick="printDiv('content')" type="button" class="btn btn-primary ml-2 ">
+                    <i class="fas fa-print"></i>&nbsp;พิมพ์
+                </button>
+                <button type="button" id="pdf" class="btn btn-warning ml-2 ">
+                    <i class="fas fa-file-pdf"></i>&nbsp;PDF
+                </button>
+            </div>
+
+        </div>
+        <div id="content">
+            <div class="row mt-4">
+                <div class="col text-center">
+                    <h2>รายการเบิกหมายเลข<br>
+                        <small>{{ object.pk }}</small>
+                    </h2>
+                    <div class="{{ object.pk }} mx-auto mt-3"></div>
+                </div>
+
+            </div>
+
+
+            <div class="row my-3">
+
+                <div class="col">
+                    <div class="">
+                        <div class="p-3 mx-4">
+                            <h4 class="text-center mb-2">===รายละเอียด===</h4>
+
+                            <p class="font-weight-bold mb-2">ผู้เบิกอุปกรณ์
+                                <small>{{ object.user.username }}</small>
+                            </p>
+                            <p class="font-weight-bold mb-2">ผู้จัดการรายการเบิก
+                                <small>{{ object.inv_manager.username }}</small>
+                            </p>
+
+                            <p class="font-weight-bold mb-2">วันที่สร้างรายการ
+                                <small>{{ object.created_at }}</small>
+                            </p>
+                            <p class="font-weight-bold mb-2">ยืมได้ถึงวันที่
+                                <small>{{ object.due_date }}</small>
+                            </p>
+                            <p class="font-weight-bold mb-2">หมายเหตุ
+                                <small>{% if object.note %}{{ object.note }}{% else %} ไม่ได้ระบุ {% endif %}</small>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+            <div class="row mt-3">
+                <div class="col ">
+
+
+                    <div class="table-responsive">
+                        <table class="table text-center">
+                            <thead>
+                            <tr>
+                                <th style="width: 10%">#</th>
+                                <th>ชื่ออุปกรณ์</th>
+                                <th>รหัสอุปกรณ์</th>
+                                <th>หมายเลขติดตามอุปกรณ์</th>
+                                <th>จำนวน</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for order_item in object.order_item_order.all %}
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td>
+                                        {{ order_item.item.item_abstract.title }}
+                                    </td>
+                                    <td>{{ order_item.item.item_abstract.serial }}</td>
+                                    <td>{{ order_item.item.tracking_number }}</td>
+                                    <td>{{ order_item.amount }}</td>
+
+
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+
+        window.print();
+        setTimeout(function () {
+            window.close();
+        }, 10000);
+
+        document.body.innerHTML = originalContents;
+
+    }
+</script>
+
+<script type="text/javascript" src={% static 'assets/js/jquery-barcode.min.js' %}></script>
+
+<script type="text/javascript">
+
+
+    $(".{{ object.pk }}").barcode("{{ object.pk }}", "code128");
+
+
+</script>
+
+<script src="{% static 'assets/js/html2pdf.bundle.min.js' %}"></script>
+<script>
+
+
+    var opt = {
+        margin: 0.3,
+        filename: 'order_{{ object.pk }}',
+        image: {type: 'jpeg', quality: 1},
+
+        jsPDF: {unit: 'in', format: 'a4', orientation: 'portrait'}
+    };
+    $('#pdf').click(function () {
+
+        var element = document.getElementById('content');
+        html2pdf().set(opt).from(element).save();
+
+
+    });
+</script>
+
+</body>
+</html>

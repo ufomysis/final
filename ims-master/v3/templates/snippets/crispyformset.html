@@ -1,0 +1,122 @@
+{% load crispy_forms_tags %}
+{% load  static %}
+
+{% block content %}
+
+    <style type="text/css">
+        .add-row {
+
+            display: block;
+            width: 100%;
+            font-weight: 400;
+
+            text-align: center;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            color: #fff;
+            background-color: #0275d8;
+            border-color: #0275d8;
+            margin-left: auto;
+            margin-right: 0;
+            margin-top: 1em;
+        }
+
+        .add-row:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+        }
+
+        .delete-row {
+
+            display: inline-block;
+            font-weight: 400;
+
+            text-align: center;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            color: #fff;
+            background-color: #dc3545;
+            border-color: #007bff;
+            margin-left: 2em;
+            margin-right: 0;
+            margin-bottom: 2em;
+        }
+
+        .delete-row:hover {
+            color: #fff;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .dynamic-form {
+            padding-top: 1em;
+            padding-bottom: 1em;
+            border-bottom: 1px dotted #ccc;
+        }
+
+
+    </style>
+
+
+
+    <table>
+        {{ formset.management_form|crispy }}
+
+
+
+        {% for form in formset.forms %}
+            <div class="{% cycle 'row1' 'row2' %} formset_row-{{ formset.prefix }} form-row ">
+                {% for field in form.visible_fields %}
+
+                    <div class="form-group col-10" >
+                        {% if forloop.first %}
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                        {% endif %}
+                        {{ field.errors.as_ul }}
+
+                        {{ field | as_crispy_field}}
+
+                    </div>
+
+                {% endfor %}
+            </div>
+
+
+        {% endfor %}
+
+
+    </table>
+    <br>
+    <script type="text/javascript" src="{% static 'assets/js/jquery.formset.js' %}"></script>
+    <script type="text/javascript">
+        $('.formset_row-{{ formset.prefix }}').formset({
+            addText: 'เพิ่มแถว',
+            deleteText: 'ลบแถว',
+            prefix: '{{ formset.prefix }}',
+        });
+    </script>
+
+
+
+{% endblock %}

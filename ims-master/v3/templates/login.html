@@ -1,0 +1,58 @@
+
+{% load bootstrap4 %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>IMS</title>
+    <meta name="description" content="IMS">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+
+
+    {% include 'base/css.html' %}
+
+</head>
+
+<body class='bg-facebook'>
+
+<div class="sufee-login d-flex align-content-center flex-wrap">
+    <div class="container ">
+        <div class="login-content ">
+
+            <div class="login-form bg-light">
+                <form action="" method="post" >{% csrf_token %}
+                    {{ form | crispy}}
+                    <div class="checkbox">
+
+                        <label class="pull-right">
+                            <a href="{% url 'password_reset' %}">ลืมรหัสผ่าน?</a>
+                        </label>
+
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-flat m-b-30 m-t-30">ลงชื่อเข้าใช้</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'base/js.html' %}
+
+
+</body>
+</html>

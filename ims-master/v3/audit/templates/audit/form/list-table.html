@@ -1,0 +1,58 @@
+{% load static %}
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-header-title d-inline">แบบฟอร์มตรวจสอบทั้งหมด</h3>
+        <a href="{% url 'audit_form:create' %}">
+            <button type="button" class="btn btn-success float-right "><i class="fas fa-plus-circle"></i>&nbsp;
+                สร้างแบบฟอร์มตรวจสอบใหม่
+            </button>
+        </a>
+
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-2">#</th>
+                    <th class="col-4">ชื่อ</th>
+                    <th class="col-2">เพิ่มโดย</th>
+                    <th class="col-2">แก้ไขล่าสุดเมื่อ</th>
+                    <th class="col-2">การจัดการ</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if object_list %}
+                    {% for object in object_list %}
+                        <tr class="d-flex">
+                            <th scope="row" class="col-2">{{ forloop.counter }}</th>
+
+                            <td class="col-4">
+                                <a href="{% url 'audit_form:detail' object.pk %}">{{ object.title }}</a>
+                            </td>
+                            <td class="col-2">{{ object.added_by }}</td>
+                            <td class="col-2">
+                                {{ object.updated }}
+                            </td>
+                            <td class="col-2">
+                                <a href="{% url 'audit_form:detail' object.pk %}">
+                                    <button type="button" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-star"></i>&nbsp;ดูรายละเอียด
+                                    </button>
+                                </a>
+
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,92 @@
+{% load static %}
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-header-title d-inline">การตรวจสอบทั้งหมด</h3>
+        <a href="{% url 'audit_session:create' %}">
+            <button type="button" class="btn btn-success float-right "><i class="fas fa-plus-circle"></i>&nbsp;
+                เริ่มการตรวจสอบใหม่
+            </button>
+        </a>
+
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    <th class="col-2">ชื่อ</th>
+                    <th class="col-2">สาขาที่ตรวจสอบ</th>
+                    <th class="col-2">ผู้ตรวจสอบ</th>
+                    <th class="col-2">วันที่ตรวจสอบ</th>
+                    <th class="col-1">สถานะ</th>
+
+                    <th class="col-2">การจัดการ</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if object_list %}
+                    {% for object in object_list %}
+                        <tr class="d-flex">
+                            <th scope="row" class="col-1">{{ forloop.counter }}</th>
+
+                            <td class="col-2">
+                                <a href="{% url 'audit_session:detail' object.pk %}">{{ object.title }}</a>
+                            </td>
+                            <td class="col-2">
+                                {% if object.branch %}
+                                    <a href="{% url 'branches:branch_detail' object.branch.slug %}">
+                                        {{ object.branch.title }}
+                                    </a>
+                                {% endif %}
+                            </td>
+
+                            <td class="col-2">
+
+                                {% if object.auditor %}
+                                    {% if object.auditor.branch %}
+                                        <a href="{% url 'branches:user_detail' object.auditor.branch.slug object.auditor.username %}">
+
+                                            {{ object.auditor.username }}
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'branches:user_detail' 'all' object.auditor.username %}">
+
+                                            {{ object.auditor.username }}
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td class="col-2">
+                                {{ object.timestamp }}
+                            </td>
+                            <td class="col-1">
+                                {% if object.status == 'in_progress' %}
+                                    กำลังตรวจสอบ
+                                {% elif object.status == 'done' %}
+                                    เสร็จสิ้น
+                                {% endif %}
+
+                            </td>
+                            <td class="col-2">
+                                <a href="{% url 'audit_session:detail' object.pk %}">
+                                    <button type="button" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-star"></i>&nbsp;ดูรายละเอียด
+                                    </button>
+                                </a>
+
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

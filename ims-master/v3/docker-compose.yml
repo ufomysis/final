@@ -1,0 +1,48 @@
+version: '3'
+services: 
+
+  web:
+
+      build: .
+      container_name: great
+      volumes: 
+      - .:/v3
+      - static:/v3/static_cdn
+      - media:/v3/media_cdn
+      depends_on: 
+          - postgres
+      expose: 
+        - 8080
+      command: bash -c "python manage.py collectstatic --no-input && gunicorn --workers=3 v3.wsgi -b 0.0.0.0:8080"
+
+  postgres:
+      build: ./postgres
+      restart: unless-stopped
+      expose:
+        - "5432"
+      environment:   # will be used by the init script
+            LC_ALL: C.UTF-8
+            POSTGRES_USER: myuser
+            POSTGRES_PASSWORD: mypassowrd.
+            POSTGRES_DB: mydb
+      volumes:
+          - pgdata:/var/lib/postgresql/data/  
+
+  nginx:
+      restart: always
+      build: ./nginx/
+      volumes: 
+        - ./nginx/:/etc/nginx/conf.d
+        - ./logs/:/v3/logs
+        - static:/v3/static_cdn
+        - media:/v3/media_cdn
+      ports: 
+        - "8000:80"
+      links:
+        - web  
+volumes: 
+  pgdata:
+  media:
+  static:  
+  
+  

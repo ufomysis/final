@@ -1,0 +1,71 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block extrahead %}
+    {{ filter.form.media }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1 class="font-weight-bold text-dark">จัดการรายการขนย้าย</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li><a href="{% url 't_orders:list' %}">รายการขนย้าย</a></li>
+                                <li class="active">จัดการรายการขนย้าย</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <form method="get">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="font-weight-bold">ค้นหารายการขนย้าย</span>
+                        <button type="submit" class="btn btn-primary float-right "><i class="fas fa-search"></i>&nbsp;
+                            ค้นหา
+                        </button>
+                    </div>
+                    <div class="card-body card-block">
+                        <div class="form-row ">
+                            <div class="input-group">
+                                {% for field in filter.form %}
+                                    <div class="form-group col-md-3 mb-0">
+                                        {{ field | as_crispy_field }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+    {% include 'items/t_order/list-table.html' %}
+
+    {% include 'snippets/paginator.html' %}
+
+
+
+{% endblock %}

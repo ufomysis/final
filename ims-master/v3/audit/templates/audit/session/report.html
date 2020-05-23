@@ -1,0 +1,149 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href={% static "assets/css/fontawesome-free-5.11.2-web/css/all.min.css" %}>
+
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="m-5">
+        <div class="row">
+            <div class="col">
+                <a href="{% url 'audit_session:detail' object.pk %}">
+                    <button type="button" class="btn btn-info ml-2 ">
+                        <i class="fas fa-backward"></i>&nbsp;ย้อนกลับ
+                    </button>
+                </a>
+                <button onclick="printDiv('content')" type="button" class="btn btn-primary ml-2 ">
+                    <i class="fas fa-print"></i>&nbsp;พิมพ์
+                </button>
+                <button type="button" id="pdf" class="btn btn-warning ml-2 ">
+                    <i class="fas fa-file-pdf"></i>&nbsp;PDF
+                </button>
+            </div>
+
+        </div>
+        <div id="content">
+            <div class="row mt-4">
+                <div class="col text-center">
+                    <h2>รายงานการตรวจสอบ<br>
+                        หมายเลข:
+                        <small>{{ object.pk }}</small>
+                    </h2>
+
+
+                </div>
+
+            </div>
+            <div class="row mt-4">
+
+                <div class="col">
+                    <div class="p-3 mt-3">
+                        <h5 class="font-weight-bold mb-2">ชื่อ: <span class="small">{{ object.title }}</span></h5>
+                        <h5 class="font-weight-bold mb-2">ผู้ตรวจสอบ: <span
+                                class="small">{{ object.auditor.username }}</span></h5>
+                        <h5 class="font-weight-bold mb-2">สาขา: <span
+                                class="small">{{ object.branch.title }}</span>
+                        </h5>
+                        <h5 class="font-weight-bold mb-2">วันที่ตรวจสอบ: <span
+                                class="small">{{ object.audit_date }}</span>
+                        </h5>
+
+                        <h5 class="font-weight-bold mb-5">
+
+
+                            หมายเหตุ: <span class="small">{% if object.note %}
+                            {{ object.note }}{% else %}<br><br>{% endif %}
+
+                        </span></h5>
+
+
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                            <tr class="d-flex">
+                                <th class="col-1" style="width: 10%">#</th>
+                                <th class="col-6">คำถาม</th>
+                                <th class="col-2">ผลลัพธ์</th>
+                                <th class="col-3">หมายเหตุ</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for q in object.audit_score_session.all %}
+                                <tr class="d-flex">
+                                    <th class="col-1" scope="row">{{ forloop.counter }}</th>
+
+                                    <td class="col-6">{{ q.question.question }}</td>
+                                    <td class="col-2">
+                                        {% if q.score_pass == 'pass' %}ผ่าน
+                                        {% elif q.score_pass == 'fail' %}ไม่ผ่าน
+                                        {% else %}  {% endif %}
+                                    </td>
+                                    <td class="col-3">{% if q.note %}{{ q.note }}{% else %} {% endif %}</td>
+
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+
+        window.print();
+        setTimeout(function () {
+            window.close();
+        }, 10000);
+
+        document.body.innerHTML = originalContents;
+
+    }
+</script>
+
+<script src="{% static 'assets/js/html2pdf.bundle.min.js' %}"></script>
+<script>
+
+
+    var opt = {
+        margin: 0.3,
+        filename: 'session_{{ object.pk }}',
+        image: {type: 'jpeg', quality: 1},
+
+        jsPDF: {unit: 'in', format: 'a4', orientation: 'portrait'}
+    };
+    $('#pdf').click(function () {
+
+        var element = document.getElementById('content');
+        html2pdf().set(opt).from(element).save();
+
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumb %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1 class="font-weight-bold text-dark">รายละเอียดการตรวจสอบ</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li><a href="{% url 'audit_session:list' %}">ตรวจสอบอุปกรณ์</a></li>
+                                <li><a href="">{{ object.title | truncatechars:30 }}</a></li>
+                                <li class="active">รายละเอียดการตรวจสอบ</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="font-weight-bold ">รายละเอียดการตรวจสอบ</h4>
+                </div>
+                <div class="col">
+
+
+                    {% if object.status == 'done' %}
+
+
+                        <a href="{% url 'audit_session:get_report' object.pk %}">
+                            <button type="button" class="btn btn-primary btn-sm ml-2 float-right">
+                                <i class="fas fa-file-invoice"></i>&nbsp;ดูรายงานสรุป
+                            </button>
+                        </a>
+                    {% else %}
+                        <button type="button" class="btn btn-danger btn-sm float-right ml-2"
+                                data-toggle="modal"
+                                data-target="#deleteModal"
+                                data-backdrop="static"
+                                data-keyboard="false">
+                            <i class="fas fa-trash-alt"></i>&nbsp;ลบการตรวจสอบ
+                        </button>
+                        <div class="modal text-center" id="deleteModal" aria-hidden="true" style="display: none;">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+
+                                        <button class="close" data-dismiss="modal">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4 class="font-weight-bold text-dark">คุณต้องการลบการตรวจสอบ<br>
+                                            <span class="font-weight-bold font-italic text-primary">{{ object.title }}</span>
+                                            หรือไม่ ?</h4>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form action="{% url 'audit_session:delete' object.pk %}" method='POST'>
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash-alt"></i>&nbsp;ยืนยันการลบ
+                                            </button>
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <button type="button" class="btn btn-success btn-sm float-right ml-2"
+                                data-toggle="modal"
+                                data-target="#session_mark_done"
+                                data-backdrop="static"
+                                data-keyboard="false">
+                            <i class="fas fa-clipboard-check"></i>&nbsp;ยืนยันการประเมินเสร็จสิ้น
+                        </button>
+                        <div class="modal text-center" id="session_mark_done" aria-hidden="true" style="display: none;">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+
+                                        <button class="close" data-dismiss="modal">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4 class="font-weight-bold text-dark">คุณต้องการยืนยันว่าการตรวจสอบ<br>
+                                            <span class="font-weight-bold font-italic text-primary">{{ object.title }}</span>
+                                            เสร็จสิ้นแล้วหรือไม่ ?</h4>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form action="{% url 'audit_session:session_mark_done' object.pk %}"
+                                              method='POST'>
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check-double"></i>&nbsp;ยืนยันการประเมินเสร็จสิ้น
+                                            </button>
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="{% url 'audit_session:score_update' object.pk %}">
+                            <button type="button" class="btn btn-primary btn-sm ml-2 float-right">
+                                <i class="fas fa-tasks"></i>&nbsp;ประเมินผล
+                            </button>
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body card-block">
+            <div class="row">
+
+                <div class="col">
+                    <div class="bg-light p-3 mt-3">
+                        <h5 class="font-weight-bold mb-2">ชื่อ: <span class="small">{{ object.title }}</span></h5>
+                        <h5 class="font-weight-bold mb-2">ผู้ตรวจสอบ: <span
+                                class="small">{{ object.auditor.username }}</span></h5>
+                        <h5 class="font-weight-bold mb-2">สาขา: <span
+                                class="small">{{ object.branch.title }}</span>
+                        </h5>
+                        <h5 class="font-weight-bold mb-2">วันที่ตรวจสอบ: <span
+                                class="small">{{ object.audit_date }}</span>
+                        </h5>
+                        <h5 class="font-weight-bold mb-2">แก้ไขล่าสุด: <span
+                                class="small">{{ object.timestamp }}</span>
+                        </h5>
+
+                        <h5 class="font-weight-bold mb-2">สถานะการตรวจสอบ: <span
+                                class="small">{% if object.status == 'in_progress' %}
+                            กำลังตรวจสอบ{% elif object.status == 'done' %}เสร็จสิ้น{% endif %}</span>
+                        </h5>
+                        <h5 class="font-weight-bold mb-2">
+                            {% if object.status != 'done' %}
+                                <button class="badge badge-warning"
+                                        data-toggle="modal"
+                                        data-target="#editNote"
+                                        data-backdrop="static"
+                                        data-keyboard="false">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <div class="modal text-center" id="editNote" aria-hidden="true" style="display: none;">
+                                    <form action="{% url 'audit_session:session_note_update' object.pk %}"
+                                          method='POST'>
+                                        {% csrf_token %}
+
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+
+                                                    <button class="close" data-dismiss="modal">×</button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {{ edit_note_form | crispy }}
+                                                </div>
+                                                <div class="modal-footer">
+
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-trash-alt"></i>&nbsp;ยืนยันการแก้ไข
+                                                    </button>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            {% endif %}
+
+                            หมายเหตุ: <span class="small">{% if object.note %}
+                            {{ object.note }}{% else %}ไม่ได้ระบุ{% endif %}
+
+                        </span></h5>
+
+
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                            <tr>
+                                <th style="width: 10%">#</th>
+                                <th>คำถาม</th>
+                                <th>ผลการประเมิน</th>
+                                <th>หมายเหตุ</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for q in object.audit_score_session.all %}
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+
+                                    <td>{{ q.question.question }}</td>
+                                    <td>
+                                        {% if q.score_pass == 'pass' %}ผ่าน
+                                        {% elif q.score_pass == 'fail' %}ไม่ผ่าน
+                                        {% else %}ยังไม่ได้ประเมินผล{% endif %}
+                                    </td>
+                                    <td>{% if q.note %}{{ q.note }}{% else %} {% endif %}</td>
+
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

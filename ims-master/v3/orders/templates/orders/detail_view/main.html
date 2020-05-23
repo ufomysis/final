@@ -1,0 +1,259 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block extrahead %}
+    {{ SelectDueDateForm.media }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1 class="font-weight-bold text-dark">รายละเอียด</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li><a href="{% url 'orders:list' %}">รายการเบิก</a></li>
+
+                                <li class="active">รายละเอียด</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+
+
+    {% load static %}
+    {% load crispy_forms_tags %}
+    <div class="card">
+
+        <div class="card-header">
+
+            <h3 class="card-header-title d-inline">รายละเอียด</h3>
+
+                {% if object.status == 'item_received' or object.status == 'item_returned' or object.status == 'done' or object.status == 'overdue' %}
+
+                    <a href="{% url 'orders:get_order_report' object.pk %}">
+                        <button type="button" class="btn btn-primary btn-sm ml-2 float-right">
+                            <i class="fas fa-file-invoice"></i>&nbsp;ดูใบสรุปรายการ
+                        </button>
+                    </a>
+                {% endif %}
+
+                {% if object.shipping_needed and object.status == 'created' or object.shipping_needed and object.status == 'wait_t_confirm' or not object.shipping_needed and object.status == 'item_ready' %}
+
+
+                    <button class="btn btn-danger btn-sm ml-2 float-right"
+                            data-toggle="modal"
+                            data-backdrop="static"
+                            data-keyboard="false"
+                            data-target="#order_cancel">
+                        <i class="fas fa-dolly ml-1 mr-2"></i>
+                        ยกเลิกรายการ
+                    </button>
+                    <div class="modal text-center" id="order_cancel" aria-hidden="true"
+                         style="display: none;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+
+                                    <button class="close" data-dismiss="modal">×</button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <h4 class="font-weight-bold text-dark">
+                                        ต้องการยกเลิกรายการเบิกหมายเลข<br>
+                                        <span class="font-weight-bold font-italic text-primary">{{ object.id }}</span><br>
+                                        หรือไม่
+                                    </h4>
+                                </div>
+                                <div class="modal-footer">
+
+                                    <form action="{% url 'orders:order_cancel' object.id %}"
+                                          method="post">{% csrf_token %}
+
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-check-double"></i>&nbsp;ยืนยัน
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {#cancel button#}
+                {% endif %}
+
+  {% if request.user.branch == object.user.branch and request.user.user_type == 'inv_manager' %}
+                {#give item#}
+
+                {% if object.status == 'item_ready' %}
+
+                    <button class="btn btn-primary btn-sm  ml-2 float-right"
+                            data-toggle="modal"
+                            data-backdrop="static"
+                            data-keyboard="false"
+                            data-target="#order_give_items">
+                        <i class="fas fa-dolly ml-1 mr-2"></i>
+                        ส่งมอบอุปกรณ์
+                    </button>
+                    <div class="modal text-center" id="order_give_items" aria-hidden="true"
+                         style="display: none;">
+                        <form action="{% url 'orders:order_give_items' object.id %}"
+                              method="post">{% csrf_token %}
+
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+
+                                        <button class="close" data-dismiss="modal">×</button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <h4 class="font-weight-bold text-dark mb-4">
+                                            กรุณาระบุวันคืนอุปกรณ์(ไม่จำเป็นต้องระบุหากไม่ต้องการรับคืนหรือต้องการกำหนดให้มีระยะเวลายืม
+                                            7 วัน)
+                                        </h4>
+                                        {{ SelectDueDateForm | crispy }}
+
+                                    </div>
+                                    <div class="modal-footer">
+
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check-double"></i>&nbsp;ส่งมอบ
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {#give item#}
+
+                {#            order_take_back button#}
+
+                {% if object.status == 'item_received' %}
+                    <button class="btn btn-primary btn-sm ml-2 float-right"
+                            data-toggle="modal"
+                            data-backdrop="static"
+                            data-keyboard="false"
+                            data-target="#order_take_back">
+                        <i class="fas fa-dolly ml-1 mr-2"></i>
+                        รับอุปกรณ์คืน
+                    </button>
+                    <div class="modal text-center" id="order_take_back" aria-hidden="true"
+                         style="display: none;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+
+                                    <button class="close" data-dismiss="modal">×</button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <h4 class="font-weight-bold text-dark">
+                                        ต้องการรับอุปกรณ์ทั้งหมดคืนหรือไม่
+                                    </h4>
+                                </div>
+                                <div class="modal-footer">
+
+                                    <form action="{% url 'orders:order_take_back' object.id %}"
+                                          method="post">{% csrf_token %}
+
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check-double"></i>&nbsp;ยืนยัน
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {#order_take_back button#}
+
+
+                {#            order_mark_done button#}
+                {% if object.status == 'item_returned' %}
+                    <button class="btn btn-success btn-sm ml-2 float-right"
+                            data-toggle="modal"
+                            data-backdrop="static"
+                            data-keyboard="false"
+                            data-target="#order_mark_done">
+                        <i class="fas fa-dolly ml-1 mr-2"></i>
+                        ระบุรายการเสร็จสิ้น
+                    </button>
+                    <div class="modal text-center" id="order_mark_done" aria-hidden="true"
+                         style="display: none;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+
+                                    <button class="close" data-dismiss="modal">×</button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <h4 class="font-weight-bold text-dark">
+                                        ต้องการระบุว่ารายการเบิกหมายเลข<br>
+                                        <span class="font-weight-bold font-italic text-primary">{{ object.id }}</span><br>
+                                        เสร็จสิ้นแล้วหรือไม่และจะไม่สามารถแก้ไขรายการทีหลังได้
+                                    </h4>
+                                </div>
+                                <div class="modal-footer">
+
+                                    <form action="{% url 'orders:order_mark_done' object.id %}"
+                                          method="post">{% csrf_token %}
+
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check-double"></i>&nbsp;ยืนยัน
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {#order_mark_done button#}
+  {% endif %}
+        </div>
+
+
+        <div class="card-body">
+
+            {% include 'orders/detail_view/status.html' %}
+            {% include 'orders/detail_view/detail.html' %}
+            {% include 'orders/detail_view/item-list.html' %}
+
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

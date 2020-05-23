@@ -1,0 +1,188 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col">
+                <h4 class="font-weight-bold ">รายละเอียดอุปกรณ์</h4>
+            </div>
+            {% if request.user.user_type == 'inv_manager' and request.user.branch.slug == branch_slug %}
+                <div class="col">
+
+                    <button type="button" class="btn btn-danger btn-sm float-right ml-2" data-toggle="modal"
+                            data-target="#deleteModal"
+                            data-backdrop="static"
+                            data-keyboard="false"><i
+                            class="fas fa-trash-alt"></i>&nbsp;ลบอุปกรณ์จากคลังสาขา
+                    </button>
+                    <div class="modal text-center" id="deleteModal" aria-hidden="true" style="display: none;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+
+                                    <button class="close" data-dismiss="modal">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <h4 class="font-weight-bold text-dark">คุณต้องการนำข้อมูลอุปกรณ์
+                                        ชื่อ: <span
+                                                class="font-weight-bold font-italic text-primary">{{ info.item_abstract.title }}</span>
+                                        รหัส:
+                                        <span class="font-weight-bold font-italic text-primary">{{ info.item_abstract.serial }}</span>
+                                        ออกจากคลังสาขาหรือไม่ ? </h4>
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{% url 'items:deregister' info.currently_at.slug info.item_abstract.serial %}"
+                                          method='POST'>
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i>&nbsp;ยืนยันการลบ
+                                        </button>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+    <div class="card-body card-block">
+        <div class="row">
+            <div class="col m-3 text-center">
+
+                {% if info.item_abstract.image %}
+                    <img class="img-responsive" width="60%" alt="" src="{{ info.item_abstract.image.url }}">
+                {% else %}
+                    <img class="img-responsive" width="60%" alt="" src={% static "images/tools.png" %}>
+                {% endif %}
+
+            </div>
+            <div class="col ">
+                <div class="bg-light p-3 mt-3 mr-3">
+                    <h4 class="font-weight-bold mb-2">ชื่ออุปกรณ์</h4>
+                    <p class="mb-4 ml-4">{{ info.item_abstract.title }}</p>
+                    <h4 class="font-weight-bold mb-2">รหัสอุปกรณ์</h4>
+                    <p class="mb-4 ml-4">{{ info.item_abstract.serial }}</p>
+                    <h4 class="font-weight-bold mb-2">คำอธิบายอุปกรณ์</h4>
+                    {% if info.item_abstract.description %}
+                        <p class="mb-4 ml-4">{{ info.item_abstract.description |slice:":200" }}
+                            <span class="collapse"
+                                  id="more_detail">{{ info.item_abstract.description |slice:"200:" }}</span>
+
+                            {% if info.item_abstract.description|length > 200 %}
+
+                                <a class="mb-4 text-right text-primary" data-toggle="collapse"
+                                   data-target="#more_detail">...&raquo</a>
+                            {% endif %}
+                        </p>
+
+                    {% else %}
+                        <p class="mb-4 ml-4">ไม่ได้ระบุ</p>
+                    {% endif %}
+                    <h4 class="font-weight-bold mb-2">ประเภทอุปกรณ์</h4>
+                    <p class="mb-4 ml-4">{{ info.item_abstract.category.title }}</p>
+
+                    <h4 class="font-weight-bold mb-2">จำนวนอุปกรณ์จาก<u class="text-primary">ทุกสาขา</u></h4>
+                    <div class="mb-4 ml-4">
+                        <h4 class="d-inline-block"><span
+                                class="badge badge-pill badge-primary">ทั้งหมด: {{ quantity.all_branches.all }}</span>
+                        </h4>
+                        <h4 class="d-inline-block"><span
+                                class="badge badge-pill badge-success">ว่าง: {{ quantity.all_branches.available }}</span>
+                        </h4>
+                        <h4 class="d-inline-block"><span
+                                class="badge badge-pill badge-warning">จองแล้ว: {{ quantity.all_branches.reserved }}</span>
+                        </h4>
+                        {% if info.item_abstract.track_1by1 %}
+
+                            <h4 class="d-inline-block"><span
+                                    class="badge badge-pill badge-danger">ไม่ว่าง: {{ quantity.all_branches.unavailable }}</span>
+                            </h4>
+
+
+
+                        {% endif %}
+                        <h4 class="d-inline-block"><span
+                                class="badge badge-pill badge-info">อยู่ในกระบวณการขนย้าย: {{ quantity.all_branches.shipping_process }}</span>
+                        </h4>
+                    </div>
+
+                    <h4 class="font-weight-bold mb-2">จำนวนอุปกรณ์จาก<u class="text-info">สาขา{{ branch_title }}</u>
+                    </h4>
+                    <div class="mb-4 ml-4">
+                        <h4 class="d-inline-block"><span
+                                class="badge badge-pill badge-primary">ทั้งหมด: {{ quantity.this_branch.all }}</span>
+                        </h4>
+                        <h4 class="d-inline-block"><span
+                                class="badge badge-pill badge-success">ว่าง: {{ quantity.this_branch.available }}</span>
+                        </h4>
+                        <h4 class="d-inline-block"><span
+                                class="badge badge-pill badge-warning">จองแล้ว: {{ quantity.this_branch.reserved }}</span>
+                        </h4>
+                        {% if info.item_abstract.track_1by1 %}
+
+                            <h4 class="d-inline-block"><span
+                                    class="badge badge-pill badge-danger">ไม่ว่าง: {{ quantity.this_branch.unavailable }}</span>
+                            </h4>
+
+
+
+                        {% endif %}
+                        <h4 class="d-inline-block"><span
+                                class="badge badge-pill badge-info">อยู่ในกระบวณการขนย้าย: {{ quantity.this_branch.shipping_process }}</span>
+                        </h4>
+                    </div>
+
+
+
+                    {% if request.user.user_type == 'inv_manager' and request.user.branch.slug == branch_slug %}
+                        <button class="btn btn-primary btn-sm mt-2 "
+                                data-toggle="modal"
+                                data-backdrop="static"
+                                data-keyboard="false"
+                                data-target="#editQModal">
+                            <i class="fas fa-folder-plus ml-1 mr-2"></i>
+                            แก้ไขจำนวนอุปกรณ์
+                        </button>
+                        <form action="{% url 'items:edit_quantity' branch_slug info.item_abstract.slug %}"
+                              method="post">{% csrf_token %}
+                            <div class="modal text-center" id="editQModal" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+
+                                            <button class="close" data-dismiss="modal">×</button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <h4 class="font-weight-bold text-dark">
+                                                กรุณากรอกจำนวนอุปกรณ์ที่ต้องการเปลี่ยนแปลง
+                                            </h4>
+                                            <div class="ml-4 mt-4">
+                                                {{ edit_q_form | crispy }}
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+
+
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check-double"></i>&nbsp;ยืนยัน
+                                            </button>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

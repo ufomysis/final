@@ -1,0 +1,100 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block breadcrumb %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1 class="font-weight-bold text-dark">รายละเอียดอุปกรณ์</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li><a href="{% url 'catalog:list' %}">เบิกใช้งานอุปกรณ์</a></li>
+                                <li>{{ info.item_abstract.title| truncatechars:30 }}</li>
+                                <li class="active">รายละเอียดอุปกรณ์</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="font-weight-bold ">รายละเอียดอุปกรณ์</h4>
+                </div>
+            </div>
+        </div>
+        <div class="card-body card-block">
+            <div class="row">
+                <div class="col m-3 text-center">
+
+                    {% if info.item_abstract.image %}
+                        <img class="img-responsive" width="60%" alt="" src="{{ info.item_abstract.image.url }}">
+                    {% else %}
+                        <img class="img-responsive" width="60%" alt="" src={% static "images/admin.jpg" %}>
+                    {% endif %}
+
+                </div>
+                <div class="col ">
+                    <div class="bg-light p-3 mt-3 mr-3">
+                        <h4 class="font-weight-bold mb-2">ชื่ออุปกรณ์</h4>
+                        <p class="mb-4 ml-4">{{ info.item_abstract.title }}</p>
+                        <h4 class="font-weight-bold mb-2">รหัสอุปกรณ์</h4>
+                        <p class="mb-4 ml-4">{{ info.item_abstract.serial }}</p>
+                        <h4 class="font-weight-bold mb-2">คำอธิบายอุปกรณ์</h4>
+                        {% if info.item_abstract.description %}
+                            <p class="mb-4 ml-4">{{ info.item_abstract.description |slice:":200" }}
+                                <span class="collapse"
+                                      id="more_detail">{{ info.item_abstract.description |slice:"200:" }}</span>
+
+                                {% if info.item_abstract.description|length > 200 %}
+
+                                    <a class="mb-4 text-right text-primary" data-toggle="collapse"
+                                       data-target="#more_detail">...&raquo</a>
+                                {% endif %}
+                            </p>
+                        {% else %}
+                            <p class="mb-4 ml-4">ไม่ได้ระบุ</p>
+                        {% endif %}
+                        <h4 class="font-weight-bold mb-2">ประเภทอุปกรณ์</h4>
+                        <p class="mb-4 ml-4">{{ info.item_abstract.category.title }}</p>
+
+
+                        {% if info.item_abstract.track_1by1 %}
+                            <h4 class="font-weight-bold text-info mb-2">***จำเป็นต้องคืนอุปกรณ์***</h4>
+                        {% else %}
+                            <h4 class="font-weight-bold text-success mb-2">***ไม่ต้องคืนอุปกรณ์***</h4>
+                        {% endif %}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% include 'orders/catalog/detail/list-table.html' %}
+
+    {% include 'snippets/paginator.html' %}
+
+{% endblock %}
+

@@ -1,0 +1,95 @@
+{% load crispy_forms_tags %}
+
+
+<div class="row my-5">
+
+    <div class="col-sm-6 ">
+        <div class="item item-0 bg-light">
+            <div class="p-3 mx-4">
+                <h3 class="display-5 text-center mb-2">===ข้อมูลหลัก===</h3>
+
+                <h4 class="font-weight-bold mb-2">ผู้เบิกอุปกรณ์</h4>
+                <p class="mb-4 ml-4">{{ object.user.username }}</p>
+                <h4 class="font-weight-bold mb-2">ผู้จัดการรายการเบิก</h4>
+                <p class="mb-4 ml-4">
+                    {% if object.inv_manager %}{{ object.inv_manager.username }}{% else %} ยังไม่ได้ระบุ {% endif %}</p>
+                <h4 class="font-weight-bold mb-2">ยืมได้ถึงวันที่</h4>
+                <p class="mb-4 ml-4">{{ object.due_date }}{% if object.status == 'overdue' %}
+                    <span class="text-warning"> (เลยกำหนดคืน)</span>{% endif %}</p>
+
+                <h4 class="font-weight-bold mb-2">รับอุปกรณ์ที่สาขา</h4>
+                <p class="mb-4 ml-4">{{ object.user.branch.title }}</p>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="col-sm-6 ">
+        <div class="item item-1 bg-light">
+            <div class="p-3 mx-4">
+                <h3 class="display-5 text-center mb-2">===ข้อมูลเพิ่มเติม===</h3>
+
+                <h4 class="font-weight-bold mb-2">สร้างรายการวันที่</h4>
+                <p class="mb-4 ml-4">{{ object.created_at }}</p>
+                <h4 class="font-weight-bold mb-2">แก้ไขรายการล่าสุดวันที่</h4>
+                <p class="mb-4 ml-4">{{ object.updated_at }}</p>
+                <h4 class="font-weight-bold mb-2">หมายเหตุ
+                    {% if object.status != 'done' and object.status != 'overdue' and object.status != 'canceled' and request.user.user_type == 'inv_manager' %}
+                        <button class="badge badge-warning "
+                                data-toggle="modal"
+                                data-backdrop="static"
+                                data-keyboard="false"
+                                data-target="#edit_note">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    {% endif %}
+
+                </h4>
+                <p class="mb-4 ml-4">{% if object.note %}{{ object.note }}{% else %} ไม่ได้ระบุ {% endif %}</p>
+                {#give item#}
+
+                {% if object.status != 'done' and object.status != 'overdue' and object.status != 'canceled' %}
+
+                    <div class="modal text-center" id="edit_note" aria-hidden="true"
+                         style="display: none;">
+                        <form action="{% url 'orders:edit_note' object.id %}"
+                              method="post">{% csrf_token %}
+
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+
+                                        <button class="close" data-dismiss="modal">×</button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <h4 class="font-weight-bold text-dark mb-4">
+                                            กรุณาระบุหมายเหตุ
+                                        </h4>
+                                        {{ EditNoteForm | crispy }}
+
+                                    </div>
+                                    <div class="modal-footer">
+
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check-double"></i>&nbsp;ยืนยัน
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {#give item#}
+                {% endif %}
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

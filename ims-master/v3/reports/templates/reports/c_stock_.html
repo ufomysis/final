@@ -1,0 +1,129 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href={% static "assets/css/fontawesome-free-5.11.2-web/css/all.min.css" %}>
+
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="m-5">
+        <div class="row">
+            <div class="col">
+                <a href="{% url 'items:branch_list' %}">
+                    <button type="button" class="btn btn-info ml-2 ">
+                        <i class="fas fa-backward"></i>&nbsp;ย้อนกลับ
+                    </button>
+                </a>
+                <button onclick="printDiv('content')" type="button" class="btn btn-primary ml-2 ">
+                    <i class="fas fa-print"></i>&nbsp;พิมพ์
+                </button>
+
+            </div>
+
+        </div>
+        <div id="content">
+            <div class="row mt-4">
+                <div class="col text-center">
+                    <h2>รายงานจำนวนและสถานะอุปกรณ์</h2>
+
+                    <h3>
+                        {% if branch %}สาขา
+                            <small>{{ branch.title }}</small>
+                        {% else %}
+                            <small>ทุกสาขา</small>
+                        {% endif %}ประจำวันที่
+                        <small>{{ date }}</small>
+                    </h3>
+                </div>
+
+            </div>
+
+            <div class="row mt-5">
+                <div class="col ">
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                            <tr>
+                                <th class="align-middle" rowspan="2" style="width: 10%">#</th>
+                                {% if request.user.user_type == 'administrator' %}
+                                    <th class="align-middle" rowspan="2">สาขา</th>
+                                {% endif %}
+                                <th class="align-middle" rowspan="2">ชื่ออุปกรณ์</th>
+                                <th class="align-middle" rowspan="2">รหัสอุปกรณ์</th>
+                                <th class="align-middle" colspan="5">จำนวน</th>
+
+                            </tr>
+                            <tr>
+                                <td class="">ทั้งหมด</td>
+                                <td class="">ว่าง</td>
+                                <td class="">จองแล้ว</td>
+                                <td class="">ไม่ว่าง</td>
+                                <td class="">ในกระบวนการขนย้าย</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for id, value in q.items %}
+
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    {% if request.user.user_type == 'administrator' %}
+                                        <td>{{ value.instance.currently_at.alias }}</td>
+                                    {% endif %}
+                                    <td>{{ value.instance.item_abstract.title }}</td>
+                                    <td>{{ value.instance.item_abstract.serial }}</td>
+                                    <td>{{ value.q.all }}</td>
+                                    <td>{{ value.q.available }}</td>
+                                    <td>{{ value.q.reserved }}</td>
+                                    <td>
+                                        {% if value.q.unavailable %}
+                                            {{ value.q.unavailable }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ value.q.shipping_process }}</td>
+                                </tr>
+
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+
+        window.print();
+
+        document.body.innerHTML = originalContents;
+
+    }
+</script>
+
+
+</body>
+</html>

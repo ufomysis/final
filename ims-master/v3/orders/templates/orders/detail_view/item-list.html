@@ -1,0 +1,52 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+<div class="row mt-5">
+    <div class="col ">
+
+
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    <th class="col-3">ชื่ออุปกรณ์</th>
+                    <th class="col-2">รหัสอุปกรณ์</th>
+                    <th class="col-2">หมายเลขติดตามอุปกรณ์</th>
+                    <th class="col-2">จำนวน</th>
+                    <th class="col-2">หน่วยนับ</th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for order_item in object.order_item_order.all %}
+                <tr class="d-flex">
+                        <th scope="row" class="col-1">{{ forloop.counter }}</th>
+                        <td class="col-3">
+                            {{ order_item.item.item_abstract.title }}
+                        </td>
+                        <td class="col-2">{{ order_item.item.item_abstract.serial }}</td>
+                        <td class="col-2">{{ order_item.item.tracking_number }}</td>
+                        <td class="col-2">{{ order_item.amount }}</td>
+                        <td class="col-2">{{ order_item.item.item_abstract.unit.title }}</td>
+
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+

@@ -1,0 +1,130 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-header-title d-inline">อุปกรณ์ทั้งหมด</h3>
+
+
+    </div>
+
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    <th class="col-1">รูปภาพ</th>
+                    <th class="col-1">Serial</th>
+                    <th class="col-2">ชื่อ</th>
+                    <th class="col-1">ประเภทอุปกรณ์</th>
+                    <th class="col-2">อยู่ที่สาขา</th>
+                    <th class="col-1">จำนวน</th>
+                    <th class="col-1">หน่วยนับ</th>
+
+                    <th class="col-2">เมนู</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for object in object_list %}
+                    <tr class="d-flex">
+                        <th scope="row" class="col-1">{{ forloop.counter }}</th>
+                        <td class="col-1">
+                            {% if object.item_abstract.image %}
+                                <img class="img-responsive" height="80px" width="80px" alt=""
+                                     src="{{ object.item_abstract.image.url }}">
+                            {% else %}
+                                <img class="img-responsive" height="80px" width="80px" alt=""
+                                     src={% static "images/tools.png" %}>
+                            {% endif %}
+                        </td>
+                        <td class="col-1">
+                            {{ object.item_abstract.serial }}
+                        </td>
+                        <td class="col-2">
+                            <a href="{% url 'catalog:detail' object.id %}">{{ object.item_abstract.title | truncatechars:30}}</a><br>
+                            {% if object.item_abstract.track_1by1 %}
+                                <span class="text-info">**ต้องคืนอุปกรณ์**</span>
+                            {% else %}
+                                <span class="text-success">**ไม่ต้องคืนอุปกรณ์**</span>
+                            {% endif %}
+                        </td>
+                        <td class="col-1">{% if object.item_abstract.category %}
+                            {{ object.item_abstract.category.title }} {% else %}
+                            ยังไม่ได้ระบุ {% endif %}</td>
+                        <td class="col-2">
+                            <a href="{% url 'branches:branch_detail' object.currently_at.slug %}">
+                                {{ object.currently_at.title }}
+                            </a>
+                        </td>
+                        <td class="col-1">{{ object.get_q_this_branch.available }}</td>
+                        <td class="col-1">{{ object.item_abstract.unit.title }}</td>
+                        <td class="col-2">
+
+
+                            <button class="btn btn-success btn-sm mx-1"
+                                    data-toggle="modal"
+                                    data-backdrop="static"
+                                    data-keyboard="false"
+                                    data-target="#borrowModal{{ object.id }}">
+                                <i class="fas fa-shopping-cart ml-1 mr-2"></i>
+                                เบิกใช้
+                            </button>
+                            <a href="{% url 'catalog:detail' object.id %}">
+                                <button type="button" class="btn btn-primary btn-sm mx-1">
+                                    <i class="fas fa-star"></i>&nbsp;ดูข้อมูล
+                                </button>
+                            </a>
+
+                            <form action="{% url 'catalog:borrow_multiple' %}"
+                                  method="post">{% csrf_token %}
+                                <input type='hidden' name='info_id' value='{{ object.id }}'/>
+
+                                <div class="modal" id="borrowModal{{ object.id }}" aria-hidden="true"
+                                     style="display: none;">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+
+                                                <button class="close" data-dismiss="modal">×</button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <h4 class="font-weight-bold text-dark">
+                                                    กรุณาระบุจำนวนที่ต้องการยืม(<span
+                                                        class="font-weight-bold font-italic text-primary">{{ object.item_abstract.unit.title }}</span>)
+                                                </h4>
+                                                <div class="ml-4 mt-4">
+                                                    {{ borrow_form | crispy }}
+                                                </div>
+
+
+                                            </div>
+                                            <div class="modal-footer">
+
+
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-check-double"></i>&nbsp;ยืนยัน
+                                                </button>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,101 @@
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-header-title d-inline">รายชื่อผู้ใช้งานในสาขา{{ branch_title }}</h3>
+        {% if branch_slug != 'all' %}
+            <a href="{% url 'branches:user_bulk_create' branch_slug %}">
+                <button type="button" class="btn btn-success float-right "><i class="fas fa-plus-circle"></i>&nbsp;
+                    เพิ่มผู้ใช้งานใหม่
+                </button>
+            </a>
+        {% endif %}
+
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    {% if branch_slug == 'all' %}
+                        <th class="col-1">สาขา</th>
+                        <th class="col-2">ชื่อผู้ใช้งาน</th>
+                    {% else %}
+                        <th class="col-3">ชื่อผู้ใช้งาน</th>
+                    {% endif %}
+                    <th class="col-2">ชื่อ - นามสกุล</th>
+                    <th class="col-2">E-mail</th>
+                    <th class="col-2">ประเภทผู้ใช้งาน</th>
+                    <th class="col-2">การจัดการ</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for object in object_list %}
+                    <tr class="d-flex">
+                        <th scope="row" class="col-1">{{ forloop.counter }}</th>
+                        {% if branch_slug == 'all' %}
+                            <td class="col-1">
+                                {% if object.branch %}
+                                    <a href="{% url 'branches:branch_detail' object.branch.slug %}">{{ object.branch.alias  }}</a>
+                                {% else %}
+                                    ไม่ได้กำหนด
+                                {% endif %}
+                            </td>
+                            <td class="col-2">
+                                {% if object.branch %}
+                                    <a href="{% url 'branches:user_detail' object.branch.slug object.username %}">{{ object.username| truncatechars:15 }}</a>
+                                {% else %}
+                                    <a href="{% url 'branches:user_detail' 'all' object.username %}">{{ object.username | truncatechars:15 }}</a>
+                                {% endif %}
+                            </td>
+                        {% else %}
+                            <td class="col-3">
+                                {% if object.branch %}
+                                    <a href="{% url 'branches:user_detail' object.branch.slug object.username %}">{{ object.username| truncatechars:15 }}</a>
+                                {% else %}
+                                    <a href="{% url 'branches:user_detail' 'all' object.username %}">{{ object.username | truncatechars:15 }}</a>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+
+                        <td class="col-2">
+                            {% if object.first_name %} {{ object.first_name }} {% else %} ยังไม่ได้ระบุ {% endif %}
+                            {% if object.last_name %} {{ object.last_name }} {% else %} ยังไม่ได้ระบุ {% endif %}
+                        </td>
+                        <td class="col-2">
+                            {% if object.email %} {{ object.email | truncatechars:20}} {% else %} ยังไม่ได้ระบุ {% endif %}
+                        </td>
+                        <td class="col-2">
+                            {% if object.user_type == 'administrator' %} ผู้ดูแลระบบ
+                            {% elif object.user_type == 'normal' %} ผู้ใช้งานทั่วไป
+                            {% elif object.user_type == 'inv_manager' %} ผู้ดูแลจัดการอุปกรณ์สาขา
+                            {% elif object.user_type == 'auditor' %} ผุ้ตรวจสอบอุปกรณ์
+                            {% endif %}
+                        </td>
+                        <td class="col-2">
+                            {% if object.branch %}
+                                <a href="{% url 'branches:user_detail' object.branch.slug object.username %}">
+                                    <button type="button" class="btn btn-primary btn-sm mx-2"><i
+                                            class="fas fa-star"></i>&nbsp;ดูข้อมูลผู้ใช้งาน
+                                    </button>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'branches:user_detail' 'all' object.username %}">
+                                    <button type="button" class="btn btn-primary btn-sm mx-2"><i
+                                            class="fas fa-star"></i>&nbsp;ดูข้อมูลผู้ใช้งาน
+                                    </button>
+                                </a>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

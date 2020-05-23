@@ -1,0 +1,89 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumb %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1 class="font-weight-bold text-dark">รายชื่อผู้ใช้งาน</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li><a href="{% url 'branches:branch_list' %}">ข้อมูลสาขาและผู้ใช้</a></li>
+                                {% if branch_slug != 'all' %}
+                                    <li>
+                                        <a href="{% url 'branches:branch_detail' branch_slug %}">{{ branch_title| truncatechars:30 }}</a>
+                                    </li>
+                                {% else %}
+                                    <li>{{ branch_title }}</li>
+                                {% endif %}
+                                <li class="active">รายชื่อผู้ใช้งาน</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <form method="get">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="font-weight-bold">ค้นหาผู้ใช้</span>
+                        <button type="submit" class="btn btn-primary float-right "><i class="fas fa-search"></i>&nbsp;
+                            ค้นหา
+                        </button>
+                    </div>
+                    <div class="card-body card-block">
+
+
+                        <div class="form-row ">
+                            <div class="input-group">
+                                <div class="form-group col mb-0">
+                                    {{ filter.form.username__contains | as_crispy_field }}
+                                </div>
+                                <div class="form-group col mb-0">
+                                    {{ filter.form.email__contains | as_crispy_field }}
+                                </div>
+                                <div class="form-group col mb-0">
+                                    {{ filter.form.first_name__contains | as_crispy_field }}
+                                </div>
+                                <div class="form-group col mb-0">
+                                    {{ filter.form.last_name__contains | as_crispy_field }}
+                                </div>
+                                <div class="form-group col mb-0">
+                                    {{ filter.form.user_type | as_crispy_field }}
+                                </div>
+                                {% if branch_slug == 'all' %}
+                                    <div class="form-group col mb-0">
+                                        {{ filter.form.branch | as_crispy_field }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    {% include 'accounts/list-table.html' %}
+
+    {% include 'snippets/paginator.html' %}
+
+
+
+{% endblock %}

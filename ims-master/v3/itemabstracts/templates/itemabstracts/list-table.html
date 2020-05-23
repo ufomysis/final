@@ -1,0 +1,89 @@
+{% load static %}
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-header-title d-inline">ข้อมูลอุปกรณ์ทั้งหมด {{ branch_title }}</h3>
+        <a href="{% url 'itemabstracts:create' %}">
+            <button type="button" class="btn btn-success float-right "><i class="fas fa-plus-circle"></i>&nbsp;
+                เพิ่มข้อมูลอุปกรณ์ใหม่
+            </button>
+        </a>
+
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    <th class="col-2">รูปภาพ</th>
+                    <th class="col-2">ชื่อ</th>
+                    <th class="col-1">รหัสอุปกรณ์</th>
+                    <th class="col-2">ประเภท</th>
+                    <th class="col-2">เพิ่มโดย</th>
+                    <th class="col-2">การจัดการ</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if object_list %}
+                    {% for object in object_list %}
+                        <tr class="d-flex">
+                            <th scope="row" class="col-1">{{ forloop.counter }}</th>
+                            <td class="col-2">
+                                {% if object.image %}
+                                    <img class="img-responsive" height="80px" width="80px" alt=""
+                                         src="{{ object.image.url }}">
+                                {% else %}
+                                    <img class="img-responsive" height="80px" width="80px" alt=""
+                                         src={% static "images/tools.png" %}>
+                                {% endif %}
+                            </td>
+                            <td class="col-2">
+                                <a href="{% url 'itemabstracts:detail' object.slug %}">{{ object.title|truncatechars:30 }}</a>
+                            </td>
+                            <td class="col-1">{{ object.serial }}</td>
+                            <td class="col-2">{% if object.category %}
+                                {{ object.category.title | truncatechars:20 }} {% else %}
+                                ยังไม่ได้ระบุ {% endif %}
+                            </td>
+                            <td class="col-2">
+
+
+                                {% if object.added_by %}
+                                    {% if object.added_by.branch %}
+                                        <a href="{% url 'branches:user_detail' object.added_by.branch.slug object.added_by.username %}">
+                                            <p class="text-primary">{{ object.added_by.username | truncatechars:20 }}</p>
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'branches:user_detail' 'all' object.added_by.username %}">
+                                            <p class="text-primary">{{ object.added_by.username | truncatechars:20 }}</p>
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="">ไม่ได้ระบุ</p>
+                                {% endif %}
+
+
+                            </td>
+                            <td class="col-2">
+
+                                <a href="{% url 'itemabstracts:detail' object.slug %}">
+                                    <button type="button" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-star"></i>&nbsp;ดูข้อมูลอุปกรณ์
+                                    </button>
+                                </a>
+
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,95 @@
+{% load static %}
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-header-title d-inline">รายชื่อสาขาทั้งหมด</h3>
+        <a href="{% url 'branches:branch_create' %}">
+            <button type="button" class="btn btn-success float-right "><i class="fas fa-plus-circle"></i>&nbsp;
+                เพิ่มสาขาใหม่
+            </button>
+        </a>
+
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    <th class="col-2">รูปภาพ</th>
+                    <th class="col-2">ชื่อสาขา</th>
+                    <th class="col-1">รหัสสาขา</th>
+                    <th class="col-3">ที่อยู่สาขา</th>
+                    <th class="col-3">การจัดการ</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="d-flex">
+                    <th scope="row" class="col-1">0</th>
+                    <td class="col-2">
+
+                        <img class="img-responsive" height="80px" width="80px" alt=""
+                             src={% static "images/Location.png" %}>
+
+                    </td>
+                    <td class="col-2">
+                        สาขาทั้งหมด
+                    </td>
+                    <td class="col-1">ไม่มี</td>
+                    <td class="col-3">ไม่มี</td>
+                    <td class="col-3">
+
+                        <a href="{% url 'branches:user_list' 'all' %}">
+                            <button type="button" class="btn btn-info btn-sm">
+                                <i class="fas fa-users"></i>&nbsp;จัดการผู้ใช้
+                            </button>
+                        </a>
+
+                    </td>
+                </tr>
+                {% if object_list %}
+                    {% for object in object_list %}
+                        <tr class="d-flex">
+                            <th scope="row" class="col-1">{{ forloop.counter }}</th>
+                            <td class="col-2">
+                                {% if object.image %}
+                                    <img class="img-responsive" height="80px" width="80px" alt=""
+                                         src="{{ object.image.url }}">
+                                {% else %}
+                                    <img class="img-responsive" height="80px" width="80px" alt=""
+                                         src={% static "images/Location.png" %}>
+                                {% endif %}
+                            </td>
+                            <td class="col-2">
+                                <a href="{% url 'branches:branch_detail' object.slug %}">{{ object.title }}</a>
+                            </td>
+                            <td class="col-1">{{ object.alias }}</td>
+                            <td class="col-3">{{ object.address | truncatechars:40 |default:"ยังไม่ได้ระบุ" }}</td>
+                            <td class="col-3">
+
+                                <a href="{% url 'branches:user_list' object.slug %}">
+                                    <button type="button" class="btn btn-info btn-sm mx-2">
+                                        <i class="fas fa-users"></i>&nbsp;ดูข้อมูลผู้ใช้
+                                    </button>
+                                </a>
+
+
+                                <a href="{% url 'branches:branch_detail' object.slug %}">
+                                    <button type="button" class="btn btn-primary btn-sm mx-2 ">
+                                        <i class="fas fa-star"></i>&nbsp;ดูข้อมูลสาขา
+                                    </button>
+                                </a>
+
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

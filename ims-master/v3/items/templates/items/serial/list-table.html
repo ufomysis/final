@@ -1,0 +1,66 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-header-title d-inline">อุปกรณ์ทั้งหมดในคลังสาขา{{ branch_title| truncatechars:30 }}</h3>
+
+
+    </div>
+
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr class="d-flex">
+                    <th class="col-1">#</th>
+                    <th class="col-2">รูปภาพ</th>
+                    <th class="col-3">ชื่อ</th>
+                    <th class="col-2">ประเภทอุปกรณ์</th>
+                    <th class="col-2">รหัสอุปกรณ์</th>
+                    <th class="col-2">การจัดการ</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for object in object_list %}
+                <tr class="d-flex">
+                        <th scope="row" class="col-1">{{ forloop.counter }}</th>
+                        <td class="col-2">
+                            {% if object.item_abstract.image %}
+                                <img class="img-responsive" height="80px" width="80px" alt=""
+                                     src="{{ object.item_abstract.image.url }}">
+                            {% else %}
+                                <img class="img-responsive" height="80px" width="80px" alt=""
+                                     src={% static "images/tools.png" %}>
+                            {% endif %}
+                        </td>
+                        <td class="col-3">
+                            <a href="{% url 'items:item_list' branch_slug object.item_abstract.slug %}">{{ object.item_abstract.title }}</a>
+                        </td>
+                        <td class="col-2">{% if object.item_abstract.category %} {{ object.item_abstract.category.title }} {% else %}
+                            ยังไม่ได้ระบุ {% endif %}</td>
+                        <td class="col-2">{{ object.item_abstract.serial }}</td>
+
+
+                        <td class="col-2">
+
+                            <a href="{% url 'items:item_list' branch_slug object.item_abstract.slug %}">
+                                <button type="button" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-tools"></i>&nbsp;จัดการอุปกรณ์
+                                </button>
+                            </a>
+
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
